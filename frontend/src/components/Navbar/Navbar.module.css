@@ -2,9 +2,7 @@
   background: var(--bg-navbar);
   padding: 1rem 0;
   border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  flex-shrink: 0;
 }
 
 .container {

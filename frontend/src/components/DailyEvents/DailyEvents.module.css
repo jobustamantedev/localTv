@@ -1,77 +1,114 @@
 .section {
   width: 100%;
-  padding: 32px 16px;
-  background: var(--bg-primary);
+  padding: 16px;
+  background: var(--bg-secondary);
 }
 
 .title {
-  font-size: 1.5rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
-  margin: 0 0 20px 0;
-  padding: 0 8px;
+  margin: 0 0 12px 0;
+  padding: 0;
 }
 
-.eventsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+.searchInput {
+  width: 100%;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.searchInput::placeholder {
+  color: var(--text-secondary);
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(204, 0, 0, 0.1);
+}
+
+.competitionsContainer {
+  display: flex;
+  flex-direction: column;
   gap: 16px;
 }
 
-.eventCard {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 16px;
-  transition: all 0.3s ease;
+.competitionGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.eventCard:hover {
-  border-color: var(--accent);
-  box-shadow: 0 4px 12px rgba(204, 0, 0, 0.1);
-}
-
-.leagueHeader {
+.competitionHeader {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
 }
 
-.leagueLogo {
-  height: 32px;
-  width: 32px;
+.competitionLogo {
+  height: 24px;
+  width: 24px;
   object-fit: contain;
   flex-shrink: 0;
 }
 
-.leagueName {
-  font-size: 0.85rem;
+.competitionTitle {
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--accent);
+  margin: 0;
   text-transform: uppercase;
 }
 
+.eventsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.eventCard {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px;
+  transition: all 0.2s ease;
+}
+
+.eventCard:hover {
+  border-color: var(--accent);
+  background: rgba(204, 0, 0, 0.05);
+}
+
 .eventTitle {
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 0.8rem;
+  font-weight: 500;
   color: var(--text-primary);
-  margin: 0 0 8px 0;
-  line-height: 1.4;
+  margin: 0 0 4px 0;
+  line-height: 1.3;
 }
 
 .eventTime {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   color: var(--text-secondary);
-  margin-bottom: 12px;
+  margin-bottom: 6px;
   font-weight: 500;
 }
 
 .streamsList {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 12px;
+  gap: 4px;
+  margin-top: 4px;
 }
 
 .streamBadge {
@@ -79,10 +116,18 @@
   background: rgba(204, 0, 0, 0.15);
   border: 1px solid rgba(204, 0, 0, 0.3);
   color: var(--accent);
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.65rem;
   font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.streamBadge:hover {
+  background: rgba(204, 0, 0, 0.3);
+  border-color: var(--accent);
 }
 
 .loadingMessage,
@@ -90,30 +135,10 @@
 .emptyMessage {
   color: var(--text-secondary);
   text-align: center;
-  padding: 40px 20px;
-  font-size: 0.95rem;
+  padding: 20px 16px;
+  font-size: 0.85rem;
 }
 
 .errorMessage {
   color: var(--accent);
-}
-
-@media (max-width: 768px) {
-  .section {
-    padding: 16px 12px;
-  }
-
-  .title {
-    font-size: 1.25rem;
-    margin-bottom: 16px;
-  }
-
-  .eventsGrid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .eventCard {
-    padding: 12px;
-  }
 }

@@ -1,17 +1,26 @@
 import { useContext } from 'react';
 import { ChannelContext } from '../context/ChannelContext';
-import { FavoritesContext } from '../context/FavoritesContext';
 import VideoPlayer from '../components/VideoPlayer/VideoPlayer';
-import ChannelSidebar from '../components/ChannelSidebar/ChannelSidebar';
+import SidebarWithTabs from '../components/SidebarWithTabs/SidebarWithTabs';
 import ChannelInfo from '../components/ChannelInfo/ChannelInfo';
-import FavoriteChannels from '../components/FavoriteChannels/FavoriteChannels';
 import LoadingSpinner from '../components/LoadingSpinner/LoadingSpinner';
 import ChannelList from '../components/ChannelList/ChannelList';
 import styles from './Home.module.css';
 
 export default function Home() {
-  const { currentChannel, loading, error } = useContext(ChannelContext);
-  const { favorites, toggleFavorite, isFavorite } = useContext(FavoritesContext);
+  const { currentChannel, loading, error, channels, setCurrentChannel } = useContext(ChannelContext);
+
+  const handleStreamClick = (streamName) => {
+    // Buscar canal que coincida con el nombre del stream
+    const matchedChannel = channels.find(
+      (channel) => streamName.toLowerCase().includes(channel.name.toLowerCase()) ||
+                   channel.name.toLowerCase().includes(streamName.toLowerCase())
+    );
+
+    if (matchedChannel) {
+      setCurrentChannel(matchedChannel);
+    }
+  };
 
   if (loading) return <LoadingSpinner />;
   if (error) return <div className={styles.error}>Error: {error}</div>;
@@ -22,17 +31,18 @@ export default function Home() {
       <div className={styles.mainContent}>
         <div className={styles.playerSection}>
           {currentChannel && (
-            <div className={styles.channelBanner}>
-              <h2 className={styles.channelName}>{currentChannel.name}</h2>
-            </div>
+            <h2 className={styles.channelTitle}>{currentChannel.name}</h2>
           )}
-          <VideoPlayer channel={currentChannel} />
-          <ChannelInfo channel={currentChannel} />
-          <FavoriteChannels favorites={favorites} isFavorite={isFavorite} onToggleFavorite={toggleFavorite} />
+          <div className={styles.videoContainer}>
+            <VideoPlayer channel={currentChannel} />
+          </div>
+          {currentChannel && (
+            <p className={styles.liveStatus}>
+              {currentChannel.is_active ? '🔴 EN VIVO' : '⚪ Offline'}
+            </p>
+          )}
         </div>
-        <aside className={styles.sidebar}>
-          <ChannelSidebar />
-        </aside>
+        <SidebarWithTabs onStreamClick={handleStreamClick} />
       </div>
 
       {/* Mobile: mostrar ChannelList debajo */}

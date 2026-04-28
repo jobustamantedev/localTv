@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { ChannelContext } from '../context/ChannelContext';
 import VideoPlayer from '../components/VideoPlayer/VideoPlayer';
 import ChannelInfo from '../components/ChannelInfo/ChannelInfo';
-import ChannelSidebar from '../components/ChannelSidebar/ChannelSidebar';
+import SidebarWithTabs from '../components/SidebarWithTabs/SidebarWithTabs';
 import ChannelList from '../components/ChannelList/ChannelList';
 import LoadingSpinner from '../components/LoadingSpinner/LoadingSpinner';
 import styles from './Home.module.css';
@@ -14,6 +14,17 @@ export default function ChannelPage() {
   const [channel, setChannel] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const handleStreamClick = (streamName) => {
+    const matchedChannel = channels.find(
+      (ch) => streamName.toLowerCase().includes(ch.name.toLowerCase()) ||
+              ch.name.toLowerCase().includes(streamName.toLowerCase())
+    );
+
+    if (matchedChannel) {
+      setCurrentChannel(matchedChannel);
+    }
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -43,16 +54,18 @@ export default function ChannelPage() {
       <div className={styles.mainContent}>
         <div className={styles.playerSection}>
           {channel && (
-            <div className={styles.channelBanner}>
-              <h2 className={styles.channelName}>{channel.name}</h2>
-            </div>
+            <h2 className={styles.channelTitle}>{channel.name}</h2>
           )}
-          <VideoPlayer channel={channel} />
-          <ChannelInfo channel={channel} />
+          <div className={styles.videoContainer}>
+            <VideoPlayer channel={channel} />
+          </div>
+          {channel && (
+            <p className={styles.liveStatus}>
+              {channel.is_active ? '🔴 EN VIVO' : '⚪ Offline'}
+            </p>
+          )}
         </div>
-        <aside className={styles.sidebar}>
-          <ChannelSidebar />
-        </aside>
+        <SidebarWithTabs onStreamClick={handleStreamClick} />
       </div>
 
       <div className={styles.mobileList}>
