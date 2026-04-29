@@ -14,5 +14,8 @@ class Channel(Base):
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    source_id = Column(String(150), nullable=True, index=True)  # iptv-org channel id, eg: "CNN.us"
+    country = Column(String(2), nullable=True, index=True)       # ISO 3166-1 alpha-2, eg: "US"
+    quality = Column(String(10), nullable=True)                  # "1080p", "720p", "480p"
 
     category = relationship("Category", back_populates="channels")

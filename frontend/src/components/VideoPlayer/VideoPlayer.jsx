@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useContext } from 'react';
 import CastButton from '../CastButton/CastButton';
+import { ChannelContext } from '../../context/ChannelContext';
 import styles from './VideoPlayer.module.css';
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
-export default function VideoPlayer({ channel }) {
+export default function VideoPlayer() {
+  const { currentChannel: channel } = useContext(ChannelContext);
   const playerRef = useRef(null);
   const clapprRef = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -71,13 +73,7 @@ export default function VideoPlayer({ channel }) {
             height: '100%',
             autoPlay: true,
             mute: false,
-            poster: channel.logo_url || '',
-            hlsjsConfig: {
-              xhrSetup: (xhr, url) => {
-                xhr.setRequestHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
-                xhr.setRequestHeader('Referer', 'https://tvtvhd.com/');
-              },
-            },
+            hlsjsConfig: {},
           });
           setError(null);
         } else {
@@ -126,16 +122,19 @@ export default function VideoPlayer({ channel }) {
       )}
       {!channel && (
         <div className={styles.placeholder}>
-          <p>Selecciona un canal para ver el stream</p>
+          <span className={styles.placeholderIcon}>▶</span>
+          <p>Selecciona un canal</p>
         </div>
       )}
       {loading && (
         <div className={styles.overlay}>
-          <p>Cargando stream...</p>
+          <div className={styles.spinner} />
+          <p className={styles.loadingText}>Conectando...</p>
         </div>
       )}
       {error && (
         <div className={styles.error}>
+          <span className={styles.errorIcon}>⚠</span>
           <p>{error}</p>
         </div>
       )}

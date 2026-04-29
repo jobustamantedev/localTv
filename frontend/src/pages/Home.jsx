@@ -1,54 +1,77 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { ChannelContext } from '../context/ChannelContext';
+import { api } from '../services/api';
 import VideoPlayer from '../components/VideoPlayer/VideoPlayer';
-import SidebarWithTabs from '../components/SidebarWithTabs/SidebarWithTabs';
-import ChannelInfo from '../components/ChannelInfo/ChannelInfo';
-import LoadingSpinner from '../components/LoadingSpinner/LoadingSpinner';
-import ChannelList from '../components/ChannelList/ChannelList';
+import SearchBar from '../components/SearchBar/SearchBar';
+import ChannelInfoPanel from '../components/ChannelInfoPanel/ChannelInfoPanel';
+import ChannelSidebar from '../components/ChannelSidebar/ChannelSidebar';
 import styles from './Home.module.css';
 
+function countryFlag(code) {
+  if (!code || code.length !== 2) return '';
+  return String.fromCodePoint(
+    ...code.toUpperCase().split('').map(c => 0x1F1E6 - 65 + c.charCodeAt(0))
+  );
+}
+
 export default function Home() {
-  const { currentChannel, loading, error, channels, setCurrentChannel } = useContext(ChannelContext);
+  const { error, currentChannel, setCurrentChannel } = useContext(ChannelContext);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initializedRef = useRef(false);
 
-  const handleStreamClick = (streamName) => {
-    // Buscar canal que coincida con el nombre del stream
-    const matchedChannel = channels.find(
-      (channel) => streamName.toLowerCase().includes(channel.name.toLowerCase()) ||
-                   channel.name.toLowerCase().includes(streamName.toLowerCase())
-    );
+  useEffect(() => {
+    if (initializedRef.current) return;
+    initializedRef.current = true;
+    const slug = searchParams.get('channel');
+    if (!slug) return;
+    api.getChannelBySlug(slug)
+      .then(channel => setCurrentChannel(channel))
+      .catch(() => {});
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    if (matchedChannel) {
-      setCurrentChannel(matchedChannel);
-    }
-  };
+  useEffect(() => {
+    if (!currentChannel?.slug) return;
+    setSearchParams({ channel: currentChannel.slug }, { replace: true });
+  }, [currentChannel?.slug]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (loading) return <LoadingSpinner />;
   if (error) return <div className={styles.error}>Error: {error}</div>;
 
   return (
     <div className={styles.home}>
-      {/* Layout desktop: player 70% + sidebar 30% */}
-      <div className={styles.mainContent}>
-        <div className={styles.playerSection}>
-          {currentChannel && (
-            <h2 className={styles.channelTitle}>{currentChannel.name}</h2>
-          )}
-          <div className={styles.videoContainer}>
-            <VideoPlayer channel={currentChannel} />
-          </div>
-          {currentChannel && (
-            <p className={styles.liveStatus}>
-              {currentChannel.is_active ? '🔴 EN VIVO' : '⚪ Offline'}
-            </p>
-          )}
+
+      {/* ── Barra de búsqueda ── */}
+      <SearchBar />
+
+      {/* ── Cuerpo principal: sidebar + player + info ── */}
+      <div className={styles.body}>
+
+        {/* wrapper transparente en desktop; en mobile se convierte en columna ordenada al final */}
+        <div className={styles.sidebarCol}>
+          <ChannelSidebar />
         </div>
-        <SidebarWithTabs onStreamClick={handleStreamClick} />
+
+        <div className={styles.playerSection}>
+          <VideoPlayer />
+        </div>
+
+        {/* canal activo: oculto en desktop, visible en mobile entre player y lista */}
+        {currentChannel && (
+          <div className={styles.mobileChannelBar}>
+            <span className={styles.mobileLive} />
+            <span className={styles.mobileChannelName}>{currentChannel.name}</span>
+            {currentChannel.country && (
+              <span className={styles.mobileChannelCountry}>
+                {countryFlag(currentChannel.country)} {currentChannel.country}
+              </span>
+            )}
+          </div>
+        )}
+
+        <ChannelInfoPanel />
+
       </div>
 
-      {/* Mobile: mostrar ChannelList debajo */}
-      <div className={styles.mobileList}>
-        <ChannelList />
-      </div>
     </div>
   );
 }
