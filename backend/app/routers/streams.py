@@ -1,7 +1,7 @@
 import re
 import os
 import httpx
-from urllib.parse import quote, unquote
+from urllib.parse import quote, unquote, urljoin
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import Response, StreamingResponse
 
@@ -79,20 +79,35 @@ async def stream_proxy(channel_slug: str):
             response = await client.get(m3u8_url)
             m3u8_content = response.text
 
+        # Calcular la URL base del m3u8 para resolver URLs relativas
+        # Ej: https://qzv4jmsc.fubohd.com/azteca7/mono.m3u8 → https://qzv4jmsc.fubohd.com/azteca7/
+        m3u8_base_url = '/'.join(m3u8_url.split('/')[:-1]) + '/'
+
         # Reescribir las URLs de segmentos para que pasen por el proxy del backend
-        # Buscar líneas que sean URLs de segmentos (.ts, .m4s, etc.)
         lines = m3u8_content.split('\n')
         rewritten_lines = []
 
         for line in lines:
-            # Si la línea es una URL absoluta de segmento, reescribirla
-            if line.startswith('http') and ('.ts' in line or '.m4s' in line or '.mp4' in line):
-                # Encodear la URL del segmento para pasar como query param
+            stripped = line.strip()
+
+            # Detectar si es una URL de segmento (absoluta o relativa)
+            is_segment = '.ts' in line or '.m4s' in line or '.mp4' in line
+            is_absolute_url = line.startswith('http')
+            is_relative_url = (line.startswith('/') or (not line.startswith('#') and not line.startswith('http'))) and is_segment
+
+            if is_absolute_url and is_segment:
+                # URL absoluta: reescribir directamente
                 encoded_url = quote(line, safe='')
                 proxy_url = f"{BACKEND_URL}/api/streams/segment?url={encoded_url}"
                 rewritten_lines.append(proxy_url)
+            elif is_relative_url:
+                # URL relativa: resolver a absoluta primero, luego reescribir
+                absolute_url = urljoin(m3u8_base_url, line)
+                encoded_url = quote(absolute_url, safe='')
+                proxy_url = f"{BACKEND_URL}/api/streams/segment?url={encoded_url}"
+                rewritten_lines.append(proxy_url)
             else:
-                # Mantener la línea original (comentarios, líneas de configuración, URLs relativas, etc.)
+                # Mantener la línea original (comentarios, líneas de configuración, etc.)
                 rewritten_lines.append(line)
 
         rewritten_m3u8 = '\n'.join(rewritten_lines)
