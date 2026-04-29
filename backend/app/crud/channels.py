@@ -6,7 +6,11 @@ from app.schemas.channel import ChannelCreate, ChannelUpdate
 def get_channels(
     db: Session,
     active_only: bool = True,
-    category_slug: str = None
+    category_slug: str = None,
+    country: str = None,
+    search: str = None,
+    limit: int = 100,
+    offset: int = 0,
 ):
     query = db.query(Channel)
 
@@ -17,7 +21,50 @@ def get_channels(
         from app.models.category import Category
         query = query.join(Category).filter(Category.slug == category_slug)
 
-    return query.order_by(Channel.name).all()
+    if country:
+        query = query.filter(Channel.country == country.upper())
+
+    if search:
+        query = query.filter(Channel.name.ilike(f"%{search}%"))
+
+    return query.order_by(Channel.name).offset(offset).limit(limit).all()
+
+
+def get_channels_count(
+    db: Session,
+    active_only: bool = True,
+    category_slug: str = None,
+    country: str = None,
+    search: str = None,
+) -> int:
+    query = db.query(Channel)
+
+    if active_only:
+        query = query.filter(Channel.is_active == True)
+
+    if category_slug:
+        from app.models.category import Category
+        query = query.join(Category).filter(Category.slug == category_slug)
+
+    if country:
+        query = query.filter(Channel.country == country.upper())
+
+    if search:
+        query = query.filter(Channel.name.ilike(f"%{search}%"))
+
+    return query.count()
+
+
+def get_countries(db: Session):
+    from sqlalchemy import func
+    rows = (
+        db.query(Channel.country, func.count(Channel.id).label("count"))
+        .filter(Channel.is_active == True, Channel.country.isnot(None))
+        .group_by(Channel.country)
+        .order_by(func.count(Channel.id).desc())
+        .all()
+    )
+    return [{"country": row.country, "count": row.count} for row in rows]
 
 def get_channel(db: Session, channel_id: int):
     return db.query(Channel).filter(Channel.id == channel_id).first()

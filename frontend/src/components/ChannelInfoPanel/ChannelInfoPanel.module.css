@@ -1,0 +1,179 @@
+.panel {
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  width: 260px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.emptyIcon { font-size: 2rem; }
+
+.sectionLabel {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  padding: 14px 16px 0;
+  text-transform: uppercase;
+}
+
+.logoArea {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px 8px;
+  min-height: 70px;
+}
+
+.logo {
+  max-width: 130px;
+  max-height: 70px;
+  object-fit: contain;
+}
+
+.logoFallback { font-size: 2.5rem; }
+
+.body {
+  padding: 0 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.channelName {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.badgeLive {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 3px 7px;
+  border-radius: 3px;
+  background: var(--live-dim);
+  color: var(--live);
+  border: 1px solid var(--live);
+}
+
+.badge {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 3px 7px;
+  border-radius: 3px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 9px 11px;
+  background: var(--bg-card);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.statLabel {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+
+.statValue {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.playBtn {
+  width: 100%;
+  padding: 11px;
+  border-radius: 5px;
+  background: var(--accent);
+  color: #000;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  transition: background 0.15s;
+}
+
+.playBtn:hover { background: var(--accent-hover); }
+
+.favBtn {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  transition: all 0.15s;
+}
+
+.favBtn:hover { border-color: var(--accent); color: var(--accent); }
+
+.favActive {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.feedId {
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  font-family: monospace;
+  text-transform: uppercase;
+  padding-top: 4px;
+}
+
+/* Tablet grande */
+@media (max-width: 1100px) {
+  .panel { width: 220px; }
+  .channelName { font-size: 1rem; }
+}
+
+/* Tablet — ocultar para dar espacio al player */
+@media (max-width: 900px) {
+  .panel { display: none; }
+}

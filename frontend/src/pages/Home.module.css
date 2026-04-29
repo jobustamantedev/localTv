@@ -1,70 +1,78 @@
 .home {
-  height: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background: var(--bg-primary);
   overflow: hidden;
 }
 
-.mainContent {
-  display: grid;
-  grid-template-columns: 1fr 350px;
-  gap: 0;
+/* Cuerpo principal: 3 columnas a altura completa */
+.body {
   flex: 1;
+  display: flex;
   min-height: 0;
+  overflow: hidden;
+}
+
+/* Wrapper del sidebar — transparente en desktop, columna en mobile */
+.sidebarCol {
+  display: contents;
 }
 
 .playerSection {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  gap: 0;
-}
-
-.channelTitle {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #fff;
-  margin: 0;
-  padding: 16px 0 0 0;
-  flex-shrink: 0;
-  text-align: center;
-}
-
-.videoContainer {
   flex: 1;
-  width: 100%;
-  min-height: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: var(--player-bg);
   overflow: hidden;
+  min-width: 0;
 }
 
-.liveStatus {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #CC0000;
-  margin: 0;
-  padding: 0 0 16px 0;
-  flex-shrink: 0;
-  text-align: center;
-}
-
-
-.sidebar {
-  background: var(--bg-secondary);
-  border-left: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.mobileList {
+/* Barra del canal activo — solo mobile */
+.mobileChannelBar {
   display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  background: var(--bg-secondary);
   border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.mobileLive {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--live);
+  animation: pulse 1.5s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.mobileChannelName {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobileChannelCountry {
+  font-size: 0.78rem;
+  margin-left: auto;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.06em;
 }
 
 .error {
@@ -72,30 +80,46 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #CC0000;
-  font-size: 1.1rem;
+  color: var(--live);
+  font-size: 1rem;
+  letter-spacing: 0.05em;
 }
 
+/* Tablet — ocultar info panel para dar más espacio al player */
+@media (max-width: 900px) and (min-width: 769px) {
+  .body { overflow: hidden; }
+}
+
+/* Mobile */
 @media (max-width: 768px) {
-  .home {
-    height: auto;
+  .body {
     flex-direction: column;
+    overflow: hidden;
   }
 
-  .mainContent {
-    grid-template-columns: 1fr;
+  /* El wrapper vuelve a ser un contenedor real con orden */
+  .sidebarCol {
+    display: flex;
+    flex-direction: column;
+    order: 3;
+    flex: 1;
     min-height: 0;
   }
 
+  /* Player: ratio 16/9 fijo en la parte superior */
   .playerSection {
-    min-height: auto;
+    order: 1;
+    flex: 0 0 auto;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    min-height: 180px;
+    max-height: 45vw;
   }
 
-  .sidebar {
-    display: none;
-  }
-
-  .mobileList {
-    display: block;
+  /* Barra de canal activo: entre player y lista */
+  .mobileChannelBar {
+    order: 2;
+    display: flex;
+    flex-shrink: 0;
   }
 }

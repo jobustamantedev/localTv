@@ -2,65 +2,39 @@ import { createContext, useState, useEffect, useRef } from 'react';
 
 export const FavoritesContext = createContext();
 
-const FAVORITES_KEY = 'bustaTv_favorites';
+const STORAGE_KEY = 'bustaTv_favorites_v2';
 
 export function FavoritesProvider({ children }) {
-  const [favorites, setFavorites] = useState([]);
-  const isInitialized = useRef(false);
+  const [favorites, setFavorites] = useState([]); // array de objetos canal completos
+  const initialized = useRef(false);
 
-  // Load favorites from localStorage on mount
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(FAVORITES_KEY);
-      console.log('Cargando favoritos desde localStorage:', stored);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setFavorites(parsed);
-        console.log('Favoritos cargados:', parsed);
-      }
-      isInitialized.current = true;
-    } catch (error) {
-      console.error('Error loading favorites:', error);
-      isInitialized.current = true;
-    }
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) setFavorites(JSON.parse(stored));
+    } catch {}
+    initialized.current = true;
   }, []);
 
-  // Save favorites to localStorage when they change (but not on initial load)
   useEffect(() => {
-    if (isInitialized.current) {
-      try {
-        const json = JSON.stringify(favorites);
-        localStorage.setItem(FAVORITES_KEY, json);
-        console.log('✅ Favoritos guardados en localStorage:', favorites);
-        console.log('Contenido localStorage:', localStorage.getItem(FAVORITES_KEY));
-      } catch (error) {
-        console.error('❌ Error guardando favoritos:', error);
-      }
-    } else {
-      console.log('⏳ Esperando inicialización...');
-    }
+    if (!initialized.current) return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
+    } catch {}
   }, [favorites]);
 
-  const toggleFavorite = (channelId) => {
-    setFavorites(prev => {
-      if (prev.includes(channelId)) {
-        return prev.filter(id => id !== channelId);
-      } else {
-        return [...prev, channelId];
-      }
-    });
-  };
+  const isFavorite = (channelId) => favorites.some(ch => ch.id === channelId);
 
-  const isFavorite = (channelId) => favorites.includes(channelId);
-
-  const value = {
-    favorites,
-    toggleFavorite,
-    isFavorite,
+  const toggleFavorite = (channel) => {
+    setFavorites(prev =>
+      prev.some(ch => ch.id === channel.id)
+        ? prev.filter(ch => ch.id !== channel.id)
+        : [...prev, channel]
+    );
   };
 
   return (
-    <FavoritesContext.Provider value={value}>
+    <FavoritesContext.Provider value={{ favorites, toggleFavorite, isFavorite }}>
       {children}
     </FavoritesContext.Provider>
   );

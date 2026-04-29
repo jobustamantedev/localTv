@@ -1,27 +1,25 @@
 :root {
-  /* Fondos */
-  --bg-primary: #0a0a0a;       /* fondo general */
-  --bg-secondary: #1a1a1a;     /* cards y sidebar */
-  --bg-card: #1a1a1a;          /* tarjetas de canal */
-  --bg-card-hover: #252525;    /* hover en tarjeta */
+  --bg-primary:    #0d0d0d;
+  --bg-secondary:  #141414;
+  --bg-card:       #1a1a1a;
+  --bg-card-hover: #222222;
+  --bg-navbar:     #111111;
 
-  /* Navbar */
-  --bg-navbar: #CC0000;        /* rojo ESPN */
+  --text-primary:   #ffffff;
+  --text-secondary: #a0a0a0;
+  --text-muted:     #555555;
 
-  /* Texto */
-  --text-primary: #FFFFFF;
-  --text-secondary: #A0A0A0;
-  --text-muted: #606060;
+  --accent:         #f0b429;   /* amarillo/dorado */
+  --accent-hover:   #d99e20;
+  --accent-dim:     rgba(240, 180, 41, 0.12);
 
-  /* Acentos */
-  --accent: #CC0000;           /* botones principales, EN VIVO */
-  --accent-hover: #990000;     /* hover en botones */
+  --live:           #e53e3e;
+  --live-dim:       rgba(229, 62, 62, 0.15);
 
-  /* Bordes */
-  --border: #2a2a2a;
+  --border:         #242424;
+  --border-light:   #2e2e2e;
 
-  /* Player */
-  --player-bg: #000000;
+  --player-bg:      #000000;
 }
 
 * {
@@ -42,17 +40,6 @@ body {
   line-height: 1.5;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-button {
-  cursor: pointer;
-  border: none;
-  font-family: inherit;
-}
-
-img {
-  display: block;
-}
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; border: none; font-family: inherit; }
+img { display: block; }

@@ -14,15 +14,41 @@ const BASE_URL = (() => {
 
 export const api = {
   // Canales (públicos)
-  getChannels: async () => {
-    const res = await fetch(`${BASE_URL}/api/channels/`);
+  getChannels: async ({ search, country, categorySlug, limit = 100, offset = 0 } = {}) => {
+    const params = new URLSearchParams({ limit, offset });
+    if (search) params.set('search', search);
+    if (country) params.set('country', country);
+    if (categorySlug) params.set('category_slug', categorySlug);
+    const res = await fetch(`${BASE_URL}/api/channels/?${params}`);
     if (!res.ok) throw new Error('Error fetching channels');
+    return res.json();
+  },
+
+  getChannelsCount: async ({ search, country, categorySlug } = {}) => {
+    const params = new URLSearchParams();
+    if (search) params.set('search', search);
+    if (country) params.set('country', country);
+    if (categorySlug) params.set('category_slug', categorySlug);
+    const res = await fetch(`${BASE_URL}/api/channels/count?${params}`);
+    if (!res.ok) throw new Error('Error fetching count');
+    return res.json();
+  },
+
+  getCountries: async () => {
+    const res = await fetch(`${BASE_URL}/api/channels/countries`);
+    if (!res.ok) throw new Error('Error fetching countries');
     return res.json();
   },
 
   getChannel: async (id) => {
     const res = await fetch(`${BASE_URL}/api/channels/${id}`);
     if (!res.ok) throw new Error('Error fetching channel');
+    return res.json();
+  },
+
+  getChannelBySlug: async (slug) => {
+    const res = await fetch(`${BASE_URL}/api/channels/slug/${slug}`);
+    if (!res.ok) throw new Error('Channel not found');
     return res.json();
   },
 

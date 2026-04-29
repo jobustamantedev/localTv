@@ -9,6 +9,9 @@ class ChannelBase(BaseModel):
     logo_url: Optional[str] = None
     category_id: int
     is_active: bool = True
+    source_id: Optional[str] = None
+    country: Optional[str] = None
+    quality: Optional[str] = None
 
 class ChannelCreate(ChannelBase):
     pass
@@ -24,5 +27,8 @@ class ChannelUpdate(BaseModel):
 class ChannelRead(ChannelBase):
     id: int
     created_at: datetime
+    source_id: Optional[str] = None
+    country: Optional[str] = None
+    quality: Optional[str] = None
 
     model_config = {"from_attributes": True}

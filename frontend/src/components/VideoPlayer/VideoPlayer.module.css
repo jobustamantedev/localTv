@@ -1,7 +1,7 @@
 .playerWrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  height: 100%;
   background: var(--player-bg);
 }
 
@@ -14,36 +14,84 @@
   position: absolute;
   inset: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 12px;
+  background: #0a0a0a;
   color: var(--text-muted);
-  font-size: 1.1rem;
+}
+
+.placeholderIcon {
+  font-size: 2rem;
+  color: var(--border-light);
+}
+
+.placeholder p {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .overlay {
   position: absolute;
   inset: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  font-size: 1.1rem;
+  gap: 14px;
+  background: #000;
   z-index: 10;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--border-light);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loadingText {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
 }
 
 .error {
   position: absolute;
   inset: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(200, 50, 50, 0.8);
-  color: white;
-  font-size: 1rem;
-  padding: 20px;
-  text-align: center;
+  gap: 10px;
+  background: #0a0a0a;
   z-index: 10;
+}
+
+.errorIcon {
+  font-size: 1.5rem;
+  color: var(--text-muted);
+}
+
+.error p {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 0 20px;
 }
 
 .controls {
@@ -51,4 +99,11 @@
   top: 12px;
   right: 12px;
   z-index: 15;
+}
+
+@media (max-width: 768px) {
+  .playerWrapper {
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
 }
