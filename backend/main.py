@@ -143,16 +143,20 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# CORS para React dev server
+# CORS para React dev server + production
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        # Dev server (localhost)
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "http://localhost:5174",
         "http://127.0.0.1:5174",
         "http://localhost:5601",
         "http://127.0.0.1:5601",
+        # Production (Vercel + custom domain)
+        "https://local-tv-gold.vercel.app",
+        "https://tv.jobustamante.dev",
     ],
     allow_credentials=True,
     allow_methods=["*"],
