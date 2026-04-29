@@ -3,6 +3,7 @@ import httpx
 from fastapi import APIRouter, HTTPException
 from sqlalchemy.orm import Session
 from fastapi import Depends
+from fastapi.responses import StreamingResponse
 from app.database import get_db
 from app.crud.channels import get_channel_by_slug
 
@@ -53,6 +54,25 @@ async def get_stream_url_from_tvtvhd(channel_slug: str) -> str:
 async def get_stream(channel_slug: str, db: Session = Depends(get_db)):
     """Obtiene la URL del stream para un canal específico"""
     try:
+        # Buscar el canal en la BD para verificar que exista
+        channel = get_channel_by_slug(db, channel_slug)
+        if not channel:
+            raise HTTPException(status_code=404, detail="Canal no encontrado")
+
+        # Retornar URL del proxy que actúa como stream directo
+        return {
+            "url": f"/api/streams/proxy/{channel_slug}",
+            "channel": channel_slug,
+        }
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+@router.get("/proxy/{channel_slug}")
+async def stream_proxy(channel_slug: str, db: Session = Depends(get_db)):
+    """Proxy real para servir el contenido del stream sin restricciones CORS"""
+    try:
         # Buscar el canal en la BD
         channel = get_channel_by_slug(db, channel_slug)
         if not channel:
@@ -65,19 +85,23 @@ async def get_stream(channel_slug: str, db: Session = Depends(get_db)):
             try:
                 stream_url = await get_stream_url_from_tvtvhd(channel_slug)
             except:
-                # Si falla la extracción, usar la URL directo
                 pass
 
-        # Retornar URL con headers necesarios
-        return {
-            "url": stream_url,
-            "channel": channel_slug,
-            "headers": {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-                "Referer": "https://tvtvhd.com/"
-            }
-        }
+        # Hacer proxy de la solicitud
+        async with httpx.AsyncClient(timeout=30, headers=HEADERS, follow_redirects=True) as client:
+            response = await client.get(stream_url)
+
+            if response.status_code != 200:
+                raise HTTPException(status_code=response.status_code, detail=f"Error obteniendo stream: {response.status_code}")
+
+            # Retornar el contenido del m3u8 directamente
+            return StreamingResponse(
+                iter([response.content]),
+                media_type="application/vnd.apple.mpegurl",
+                headers={"Access-Control-Allow-Origin": "*"}
+            )
+
     except HTTPException as e:
         raise e
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error en proxy: {str(e)}")
